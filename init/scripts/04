@@ -1,0 +1,12 @@
+#!bin/bash
+# save this file to ~/crontab_check.sh
+
+m1='cat /etc/md5cron'
+m2='md5sum /etc/crontab'
+
+if [ "$m1" != "$m2" ] ; then
+   echo "File being modified!" | mail -s "File crontab modified" root@root.com
+   md5sum /etc/crontab > /etc/md5cron
+fi
+
+# echo "0 0 * * * sh ~/crontab_check.sh"

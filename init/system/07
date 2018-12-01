@@ -1,0 +1,1 @@
+ps axu | grep "nNCTR" | awk '{print $2}'

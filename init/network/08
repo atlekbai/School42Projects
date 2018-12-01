@@ -1,0 +1,1 @@
+whois 13.32.218.218 | grep "OrgName" | awk '{print $2, $3, $4}'

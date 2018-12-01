@@ -1,0 +1,1 @@
+System name should be changed in file "/etc/hostname". Also previous name should be replaced in file "/etc/hosts". After reboot system name will be changed.

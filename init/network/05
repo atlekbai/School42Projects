@@ -1,0 +1,1 @@
+route -n get slash16.org | grep "route to:" | sed "s/.*to: //g"
