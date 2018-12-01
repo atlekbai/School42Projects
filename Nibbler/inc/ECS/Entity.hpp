@@ -55,26 +55,26 @@ public:
 	void	update(void);
 	void	draw(void);
 	void	destroy(void);
-	void	add_group(std::size_t group);
-	void	del_group(std::size_t group);
-	bool	is_active(void) const;
-	bool	has_group(std::size_t group);
+	void	addGroup(std::size_t group);
+	void	delGroup(std::size_t group);
+	bool	isActive(void) const;
+	bool	hasGroup(std::size_t group);
 	
 	template<typename T>
-	bool	has_component(void) const
+	bool	hasComponent(void) const
 	{
 		return (components_bitset[get_component_id<T>()]);
 	}
 
 	template<typename T>
-	T		&get_component(void) const
+	T		&getComponent(void) const
 	{
 		auto ptr(components_array[get_component_id<T>()]);
 		return (*static_cast<T*>(ptr));
 	}
 
 	template<typename T, typename ... TArgs>
-	T		&add_component(TArgs ... m_args)
+	T		&addComponent(TArgs ... m_args)
 	{
 		T	*c(new T(std::forward<TArgs>(m_args)...));
 		c->entity = this;

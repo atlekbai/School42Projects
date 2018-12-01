@@ -13,38 +13,38 @@
 #ifndef GAME_HPP
 # define GAME_HPP
 
-# include "SDL2/SDL.h"
-# include "SDL_image.h"
-# include "SDL_ttf.h"
-# include <iostream>
-# include <vector>
+# include "Framework.hpp"
+# include "Manager.hpp"
 
-class AssetManager;
+class Map;
 
 class Game
 {
 private:
-	SDL_Window	*window;
+	std::vector<Entity*>	*backgrounds;
+	std::vector<Entity*>	*players;
+	std::vector<Entity*>	*foods;
+	std::vector<Entity*>	*colliders;
+	Entity					*player;
+	
 public:
 	Game(void);
 	~Game(void);
 	void	init(const char *title, int width, int height);
-	void	handle_events(void);
+	void	handleEvents(void);
 	void	update(void);
 	void	render(void);
-	void	clean(void);
 	bool	running(void) const;
-	static SDL_Renderer	*renderer;
-	static SDL_Event	event;
-	static SDL_Rect		camera;
+	void	delay(int time);
+	unsigned ticks(void);
+	
 	static bool			is_running;
-	static AssetManager	*assets;
-	enum				name
-	{
-		group_map,
-		group_player,
-		group_colliders
-	};
+	static Manager		manager;
+	static Framework	*frameWork;
+	static Map			*map;
+	static int			cellSize;
+	static Vector2D		mapSize;
+	
 };
 
 #endif

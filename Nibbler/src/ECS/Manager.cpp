@@ -34,9 +34,9 @@ void					Manager::refresh(void)
 {
 	for (auto i = 0u; i < max_groups; i++)
 	{
-		auto &v(grouped_entities[i]);
+		auto &v(groupedEntities[i]);
 		v.erase(std::remove_if(v.begin(), v.end(), [i](Entity *e){
-			return (!e->is_active() || !e->has_group(i));
+			return (!e->isActive() || !e->hasGroup(i));
 		}), v.end());
 	}
 	entities.erase(
@@ -44,21 +44,21 @@ void					Manager::refresh(void)
 			entities.begin(),
 			entities.end(),
 			[](const std::unique_ptr<Entity> &e){
-				return (!e->is_active());
+				return (!e->isActive());
 			}), entities.end());
 }
 
-void					Manager::add_to_group(Entity* entity, std::size_t group)
+void					Manager::addToGroup(Entity* entity, std::size_t group)
 {
-	grouped_entities[group].emplace_back(entity);
+	groupedEntities[group].emplace_back(entity);
 }
 
-std::vector<Entity*>	&Manager::get_group(std::size_t group)
+std::vector<Entity*>	&Manager::getGroup(std::size_t group)
 {
-	return (grouped_entities[group]);
+	return (groupedEntities[group]);
 }
 
-Entity					&Manager::add_entity(void)
+Entity					&Manager::addEntity(void)
 {
 	Entity 					*e = new Entity(*this);
 	std::unique_ptr<Entity>	ptr{e};
@@ -66,8 +66,8 @@ Entity					&Manager::add_entity(void)
 	return (*e);
 }
 
-void					Entity::add_group(std::size_t group)
+void					Entity::addGroup(std::size_t group)
 {
 	groups_bitset[group] = true;
-	manager.add_to_group(this, group);
+	manager.addToGroup(this, group);
 }

@@ -14,8 +14,6 @@
 
 int	main(int ac, char **av)
 {
-	if (ac == 1)
-		return (0);
 	const int	FPS = 60;
 	const int	frame_delay = 1000 / FPS;
 	unsigned	frame_start;
@@ -24,22 +22,21 @@ int	main(int ac, char **av)
 	int			width;
 	int			height;
 
-	width = atoi(av[1]);
-	height = atoi(av[2]);
-	if (width < 400 || height < 400)
-		return (0);
+	width = 800;
+	height = 640;
 	game = new Game();
 	game->init("Nibbler", width, height);
 	while (game->running())
 	{
-		frame_start = SDL_GetTicks();
-		game->handle_events();
+		frame_start = game->ticks();
+	
+		game->handleEvents();
 		game->update();
 		game->render();
-		frame_time = SDL_GetTicks() - frame_start;
+
+		frame_time = game->ticks() - frame_start;
 		if (frame_delay > frame_time)
-			SDL_Delay(frame_delay - frame_time);
+			game->delay(frame_delay - frame_time);
 	}
-	game->clean();
 	return (0);
 }

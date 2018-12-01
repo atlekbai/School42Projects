@@ -35,17 +35,17 @@ void	Entity::destroy(void)
 	active = false;
 }
 
-void	Entity::del_group(std::size_t group)
+void	Entity::delGroup(std::size_t group)
 {
 	groups_bitset[group] = false;
 }
 
-bool	Entity::is_active(void) const
+bool	Entity::isActive(void) const
 {
 	return (active);
 }
 
-bool	Entity::has_group(std::size_t group)
+bool	Entity::hasGroup(std::size_t group)
 {
 	return (groups_bitset[group]);
 }

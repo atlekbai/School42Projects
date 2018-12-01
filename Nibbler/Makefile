@@ -25,17 +25,11 @@ OBJ_COM	= 	./obj/Components
 
 FLAGS	= 	-std=c++14
 SRC		=	main.cpp \
-			Map.cpp \
 			Game.cpp \
-			Vector2D.cpp \
 			ECS/Entity.cpp \
 			ECS/Manager.cpp \
-			Managers/AssetManager.cpp \
-			Managers/TextureManager.cpp \
-			Components/UILabel.cpp \
-			Components/TileComponent.cpp \
-			Components/SnakeBodyComponent.cpp\
-			Components/FoodComponent.cpp
+			SDLFramework.cpp
+			
 OBJ		=	$(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))
 INC		=	-I $(INC_DIR) \
 			-I $(INC_ECS) \

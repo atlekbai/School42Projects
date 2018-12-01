@@ -19,16 +19,16 @@ class Manager
 {
 private:
 	std::vector<std::unique_ptr<Entity>>			entities;
-	std::array<std::vector<Entity*>, max_groups>	grouped_entities;
+	std::array<std::vector<Entity*>, max_groups>	groupedEntities;
 public:
 	Manager(void);
 	~Manager(void);
 	void					update(void);
 	void					draw(void);
 	void					refresh(void);
-	void					add_to_group(Entity* entity, std::size_t group);
-	std::vector<Entity*>	&get_group(std::size_t group);
-	Entity					&add_entity(void);
+	void					addToGroup(Entity* entity, std::size_t group);
+	std::vector<Entity*>	&getGroup(std::size_t group);
+	Entity					&addEntity(void);
 };
 
 #endif
