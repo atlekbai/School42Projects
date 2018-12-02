@@ -71,3 +71,13 @@ void					Entity::addGroup(std::size_t group)
 	groups_bitset[group] = true;
 	manager.addToGroup(this, group);
 }
+
+void					Manager::clear(void)
+{
+	for (auto i = 0u; i < max_groups; i++)
+	{
+		auto &v(groupedEntities[i]);
+		v.clear();
+	}
+	entities.clear();
+}

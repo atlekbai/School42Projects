@@ -36,6 +36,8 @@ void	SDLFramework::init(const char *title, int width, int height)
 	textures.emplace("background", loadTexture("assets/dirt.png"));
 	textures.emplace("collider", loadTexture("assets/stone.png"));
 	textures.emplace("food", loadTexture("assets/food.png"));
+	textures.emplace("crash", loadTexture("assets/crash.png"));
+	textures.emplace("game_over", loadTexture("assets/game_over.png"));
 	
 	is_ready = true;
 }
@@ -56,6 +58,8 @@ int		SDLFramework::handleEvents(void)
 			return (3);
 		else if (code == SDLK_DOWN)		
 			return (4);
+		else if (code == SDLK_SPACE)
+			return (-1);
 	}
 	else if (event.type == SDL_KEYUP)
 	{

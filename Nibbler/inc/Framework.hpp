@@ -35,6 +35,7 @@ enum	group
 	group_player,
 	group_food,
 	group_colliders,
+	group_ui
 };
 
 class Framework

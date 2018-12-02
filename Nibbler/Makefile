@@ -28,6 +28,7 @@ SRC		=	main.cpp \
 			Game.cpp \
 			ECS/Entity.cpp \
 			ECS/Manager.cpp \
+			Components/Snake.cpp\
 			SDLFramework.cpp
 			
 OBJ		=	$(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))

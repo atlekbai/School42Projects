@@ -21,11 +21,11 @@ class SpriteComponent: public Component
 {
 private:
 	TransformComponent	*transform;
-	std::string			textureId;
 	Rect				src;
 	Rect				dst;
 
 public:
+	std::string			textureId;
 	SpriteComponent(void) = default;
 	SpriteComponent(std::string id) : textureId(id){}
 
@@ -38,6 +38,7 @@ public:
 	{
 		transform = &entity->getComponent<TransformComponent>();
 		src = {0, 0, transform->w * 2, transform->h * 2};
+		dst = {transform->position.x, transform->position.y, transform->w, transform->h};
 	}
 
 	void	update(void) override

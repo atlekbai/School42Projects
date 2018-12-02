@@ -16,6 +16,11 @@
 # include "Framework.hpp"
 # include "Manager.hpp"
 
+
+/*
+** state 1 - game is runnig
+** state 2 - game is over
+*/
 class Map;
 
 class Game
@@ -25,7 +30,9 @@ private:
 	std::vector<Entity*>	*players;
 	std::vector<Entity*>	*foods;
 	std::vector<Entity*>	*colliders;
+	std::vector<Entity*>	*ui;
 	Entity					*player;
+	Entity					*foodSpawner;
 	
 public:
 	Game(void);
@@ -37,8 +44,11 @@ public:
 	bool	running(void) const;
 	void	delay(int time);
 	unsigned ticks(void);
+	void	start(void);
+	void	clear(void);
 	
 	static bool			is_running;
+	static int			state;
 	static Manager		manager;
 	static Framework	*frameWork;
 	static Map			*map;

@@ -19,6 +19,7 @@ Manager		Game::manager;
 Framework	*Game::frameWork;
 Map			*Game::map;
 bool		Game::is_running = false;
+int			Game::state = 1;
 int			Game::cellSize;
 Vector2D	Game::mapSize;
 
@@ -26,6 +27,7 @@ Game::Game(void){}
 
 Game::~Game(void)
 {
+	clear();
 	frameWork->close();
 }
 
@@ -36,40 +38,84 @@ void	Game::init(const char *title, int width, int height)
 	is_running = true;
 	cellSize = 32;
 	mapSize = {width / cellSize, height / cellSize};
+	start();
+}
 
+void	Game::start(void)
+{
 	map = new Map();
 	map->loadMap(mapSize.x, mapSize.y);
 
 	player = &manager.addEntity();
-	player->addComponent<Snake>(mapSize.x / 2, mapSize.y / 2, 5);
+	player->addComponent<Snake>(mapSize.x / 2, mapSize.y / 2, 10);
 	player->addGroup(group_player);
+
+	// foodSpawner = &manager.addEntity();
+	// foodSpawner->addComponent<FoodSpawner>({mapSize.});
 
 	backgrounds = &manager.getGroup(group_map);
 	players = &manager.getGroup(group_player);
 	foods = &manager.getGroup(group_food);
 	colliders = &manager.getGroup(group_colliders);
+	ui = &manager.getGroup(group_ui);
+}
+
+void	Game::clear(void)
+{
+	delete (map);
+	manager.clear();
 }
 
 void	Game::handleEvents(void)
 {
-	/*
-	**	1 - D, 2 - A, 3 - W, 4 - S
-	*/
-	int control = frameWork->handleEvents();
-	if (control != 0)
-		player->getComponent<Snake>().dir = control;
+	static unsigned wait = 5;
+	static unsigned cycle = 0;
+	int control;
+
+	if (cycle == wait)
+	{
+		cycle = 0;
+		control = frameWork->handleEvents();
+		if (state == 2 && control == -1)
+		{
+			clear();
+			start();
+			state = 1;
+		}
+		else if (control == 1 || control == 2 || control == 3 || control == 4)
+			player->getComponent<Snake>().setDir(control);
+	}
+	cycle++;
 }
 
 void	Game::update(void)
 {
 	manager.refresh();
-    manager.update();
+	if (state == 2)
+		return ;
+	manager.update();
+
+    Vector2D	snakeHead = player->getComponent<Snake>().body.front();
+    Vector2D	colPos;
+    for (auto &c: *colliders)
+    {
+    	colPos = c->getComponent<TransformComponent>().position;
+    	if (colPos.x == snakeHead.x && colPos.y == snakeHead.y)
+    	{
+
+    		auto &cell(Game::manager.addEntity());
+			cell.addComponent<TransformComponent>(colPos.x, colPos.y, cellSize, cellSize);
+			cell.addComponent<SpriteComponent>("crash");
+			cell.addGroup(group_ui);
+			state = 2;
+			break ;
+    	}
+    }
 }
 
 void	Game::render(void)
 {
 	frameWork->clear();
-
 	for (auto &b: *backgrounds)
 		b->draw();
 	for (auto &p: *players)
@@ -78,7 +124,16 @@ void	Game::render(void)
 		f->draw();
 	for (auto &c: *colliders)
 		c->draw();
-
+	for (auto &u: *ui)
+		u->draw();
+	if (state == 2)
+	{
+		Rect src = {0, 0, 365, 65};
+		int x = (mapSize.x * cellSize - src.w) / 2;
+		int y = (mapSize.y * cellSize - src.h) / 2;
+		Rect dst = {x, y, 365, 65};
+		frameWork->draw("game_over", src, dst, 0);
+	}
 	frameWork->render();
 }
 

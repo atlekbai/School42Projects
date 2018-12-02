@@ -29,6 +29,7 @@ public:
 	void					addToGroup(Entity* entity, std::size_t group);
 	std::vector<Entity*>	&getGroup(std::size_t group);
 	Entity					&addEntity(void);
+	void					clear(void);
 };
 
 #endif
