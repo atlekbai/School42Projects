@@ -47,11 +47,11 @@ void	Game::start(void)
 	map->loadMap(mapSize.x, mapSize.y);
 
 	player = &manager.addEntity();
-	player->addComponent<Snake>(mapSize.x / 2, mapSize.y / 2, 10);
+	player->addComponent<Snake>(mapSize.x / 2, mapSize.y / 2, 2);
 	player->addGroup(group_player);
 
-	// foodSpawner = &manager.addEntity();
-	// foodSpawner->addComponent<FoodSpawner>({mapSize.});
+	foodSpawner = &manager.addEntity();
+	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body);
 
 	backgrounds = &manager.getGroup(group_map);
 	players = &manager.getGroup(group_player);
@@ -96,15 +96,26 @@ void	Game::update(void)
 	manager.update();
 
     Vector2D	snakeHead = player->getComponent<Snake>().body.front();
-    Vector2D	colPos;
+    Vector2D	pos;
+
+    for (auto &f: *foods)
+    {
+    	pos = f->getComponent<TransformComponent>().position;
+    	if (pos.x == snakeHead.x && pos.y == snakeHead.y)
+    	{
+    		foodSpawner->getComponent<FoodSpawner>().destroyFood(f);
+    		player->getComponent<Snake>().addTail();
+    		break;
+    	}
+    }
+
     for (auto &c: *colliders)
     {
-    	colPos = c->getComponent<TransformComponent>().position;
-    	if (colPos.x == snakeHead.x && colPos.y == snakeHead.y)
+    	pos = c->getComponent<TransformComponent>().position;
+    	if (pos.x == snakeHead.x && pos.y == snakeHead.y)
     	{
-
     		auto &cell(Game::manager.addEntity());
-			cell.addComponent<TransformComponent>(colPos.x, colPos.y, cellSize, cellSize);
+			cell.addComponent<TransformComponent>(pos.x, pos.y, cellSize, cellSize);
 			cell.addComponent<SpriteComponent>("crash");
 			cell.addGroup(group_ui);
 			state = 2;
@@ -120,10 +131,10 @@ void	Game::render(void)
 		b->draw();
 	for (auto &p: *players)
 		p->draw();
-	for (auto &f: *foods)
-		f->draw();
 	for (auto &c: *colliders)
 		c->draw();
+	for (auto &f: *foods)
+		f->draw();
 	for (auto &u: *ui)
 		u->draw();
 	if (state == 2)

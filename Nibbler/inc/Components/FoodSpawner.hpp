@@ -1,21 +1,36 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Components.hpp                                     :+:      :+:    :+:   //
+//   FoodSpawner.hpp                                    :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: atlekbai <atlekbai@student.unit.ua>        +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/12/01 18:04:10 by atlekbai          #+#    #+#             //
-//   Updated: 2018/12/01 18:04:10 by atlekbai         ###   ########.fr       //
+//   Created: 2018/12/02 22:45:44 by atlekbai          #+#    #+#             //
+//   Updated: 2018/12/02 22:45:45 by atlekbai         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef COMPONENTS_HPP
-# define COMPONENTS_HPP
+#ifndef FOOD_SPAWNER_HPP
+# define FOOD_SPAWNER_HPP
 
-# include "TransformComponent.hpp"
-# include "SpriteComponent.hpp"
-# include "Snake.hpp"
-# include "FoodSpawner.hpp"
+# include "Game.hpp"
+# include "Component.hpp"
+# include "Components.hpp"
+
+
+class FoodSpawner: public Component
+{
+private:
+	std::deque<Vector2D> *body;
+
+public:
+	FoodSpawner(std::deque<Vector2D> *snake)
+	{
+		body = snake;
+	}
+	void init(void) override;
+	void addFood(void);
+	void destroyFood(Entity *e);
+};
 
 #endif

@@ -94,6 +94,26 @@ void	Snake::setDir(int newDir)
 	cycle = 10;
 }
 
+void	Snake::addTail(void)
+{
+	int x, y;
+	Vector2D wayF = body[body.size() - 2];
+	Vector2D wayB = body[body.size() - 1];
+
+	if (wayF.y == wayB.y)
+	{
+		x = (wayB.x > wayF.x) ? wayB.x + 1 : x = wayB.x - 1;
+		y = wayB.y;
+	}
+	else if (wayF.x == wayB.x)
+	{
+		x = wayB.x;
+		x = (wayB.y > wayF.y) ? wayB.y + 1 : x = wayB.y - 1;
+	}
+	body.push_back({x * Game::cellSize, y * Game::cellSize});
+}
+
+
 
 void	Snake::update(void)
 {

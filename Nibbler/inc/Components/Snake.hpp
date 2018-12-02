@@ -38,6 +38,7 @@ public:
 	void	go_left(void);
 	void	go_down(void);
 	void	setDir(int newDir);
+	void	addTail(void);
 };
 
 #endif
