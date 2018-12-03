@@ -25,7 +25,9 @@ class SDLFramework: public Framework
 private:
 	std::map<std::string, SDL_Texture*>		textures;
 	std::map<std::string, TTF_Font*>		fonts;
+	std::map<std::string, Rect>				size;
 	SDL_Window								*window;
+	SDL_Texture 		*createLabel(std::string text, std::string fontId, std::string id);
 
 public:
 	virtual void		init(const char *title, int width, int height);
@@ -37,6 +39,8 @@ public:
 	virtual SDL_Texture	*loadTexture(const char *fileName);
 	virtual void		delay(int time);
 	virtual unsigned	ticks(void);
+	virtual void		drawScore(int score, int id, int x, int y);
+
 
 	static SDL_Renderer	*renderer;
 	static SDL_Event	event;

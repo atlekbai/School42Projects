@@ -15,8 +15,7 @@
 
 # include "Framework.hpp"
 # include "Manager.hpp"
-
-
+# include <map>
 /*
 ** state 1 - game is runnig
 ** state 2 - game is over
@@ -32,7 +31,13 @@ private:
 	std::vector<Entity*>	*colliders;
 	std::vector<Entity*>	*ui;
 	Entity					*player;
+	Entity					*player2;
 	Entity					*foodSpawner;
+
+	void					addSnake(Entity **p, int x, int y, int len, int id);
+	void					checkSnake(Entity *snake);
+	void					checkSnakes(Entity **s1, Entity **s2);
+	void					addCrash(int x, int y);
 	
 public:
 	Game(void);
@@ -44,8 +49,9 @@ public:
 	bool	running(void) const;
 	void	delay(int time);
 	unsigned ticks(void);
-	void	start(void);
+	void	start(int newState);
 	void	clear(void);
+	void	mainMenu(void);
 	
 	static bool			is_running;
 	static int			state;
@@ -54,7 +60,7 @@ public:
 	static Map			*map;
 	static int			cellSize;
 	static Vector2D		mapSize;
-	
+	static std::map<std::string, std::string> menu;
 };
 
 #endif

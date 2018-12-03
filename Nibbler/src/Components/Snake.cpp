@@ -12,13 +12,15 @@
 
 # include "Snake.hpp"
 
-static void	drawPart(std::string id, int x, int y, double angle)
+static void	drawPart(std::string id, int x, int y, double angle, int i)
 {
 	Rect src;
 	Rect dst;
 
 	src = {0, 0, 64, 64};
 	dst = {x, y, Game::cellSize, Game::cellSize};
+	if (i == 2)
+		id += '2';
 	Game::frameWork->draw(id, src, dst, angle);
 }
 
@@ -45,48 +47,50 @@ void	Snake::draw(void)
 	Vector2D wayB;
 	int i = 0;
 
-	drawPart("snake_head", body[0].x, body[0].y, getAngle(dir));
+	drawPart("snake_head", body[0].x, body[0].y, getAngle(dir), id);
 
 	for (i = 1; i < body.size() - 1; i++)
 	{
 		wayF = body[i - 1];
 		wayB = body[i + 1];
 		if (wayF.x == wayB.x && wayF.y == wayB.y)
-			drawPart("snake_body", body[i].x, body[i].y, getAngle(dir));
+			drawPart("snake_body", body[i].x, body[i].y, getAngle(dir), id);
 		else if (wayB.x == wayF.x)
-			drawPart("snake_body", body[i].x, body[i].y, 90);
+			drawPart("snake_body", body[i].x, body[i].y, 90, id);
 		else if (wayB.y == wayF.y)
-			drawPart("snake_body", body[i].x, body[i].y, 0);
+			drawPart("snake_body", body[i].x, body[i].y, 0, id);
 		else if ((wayF.x > wayB.x && wayF.y < wayB.y && wayF.y == body[i].y) ||
 				(wayF.x < wayB.x && wayF.y > wayB.y && wayF.x == body[i].x))
-			drawPart("snake_edge", body[i].x, body[i].y, 0);
+			drawPart("snake_edge", body[i].x, body[i].y, 0, id);
 		else if ((wayF.x < wayB.x && wayF.y < wayB.y && wayF.y == body[i].y) ||
 				(wayF.x > wayB.x && wayF.y > wayB.y && wayF.x == body[i].x))
-			drawPart("snake_edge", body[i].x, body[i].y, 90);
+			drawPart("snake_edge", body[i].x, body[i].y, 90, id);
 		else if ((wayF.x < wayB.x && wayF.y > wayB.y && wayF.y == body[i].y) || 
 				(wayF.x > wayB.x && wayF.y < wayB.y && wayF.x == body[i].x))
-			drawPart("snake_edge", body[i].x, body[i].y, 180);
+			drawPart("snake_edge", body[i].x, body[i].y, 180, id);
 		else if (wayF.x > wayB.x && wayF.y > wayB.y && wayF.y == body[i].y)
-			drawPart("snake_edge", body[i].x, body[i].y, 270);
+			drawPart("snake_edge", body[i].x, body[i].y, 270, id);
 		else if (wayF.x < wayB.x && wayF.y < wayB.y)
-			drawPart("snake_edge", body[i].x, body[i].y, 270);
+			drawPart("snake_edge", body[i].x, body[i].y, 270, id);
 		else if (wayF.x > wayB.x && wayF.y < wayB.y)
-			drawPart("snake_edge", body[i].x, body[i].y, 180);
+			drawPart("snake_edge", body[i].x, body[i].y, 180, id);
 	}
+	if (body.size() == 1)
+		return ;
 	wayF = body[i - 1];
 	if (wayF.x == body[i].x)
 	{
 		if (wayF.y > body[i].y)
-			drawPart("snake_tail", body[i].x, body[i].y, 90);
+			drawPart("snake_tail", body[i].x, body[i].y, 90, id);
 		else
-			drawPart("snake_tail", body[i].x, body[i].y, 270);
+			drawPart("snake_tail", body[i].x, body[i].y, 270, id);
 	}
 	else if (wayF.y == body[i].y)
 	{
 		if (wayF.x > body[i].x)
-			drawPart("snake_tail", body[i].x, body[i].y, 0);
+			drawPart("snake_tail", body[i].x, body[i].y, 0, id);
 		else
-			drawPart("snake_tail", body[i].x, body[i].y, 180);
+			drawPart("snake_tail", body[i].x, body[i].y, 180, id);
 	}
 }
 
@@ -113,8 +117,13 @@ void	Snake::addTail(void)
 		y = (wayB.y > wayF.y) ? wayB.y + Game::cellSize : wayB.y - Game::cellSize;
 	}
 	body.push_back({x, y});
+	score++;
 }
 
+void	Snake::cut(int i)
+{
+	body.erase(body.begin() + i, body.end());
+}
 
 
 void	Snake::update(void)
@@ -123,14 +132,26 @@ void	Snake::update(void)
 	if (cycle == wait)
 	{
 		cycle = 0;
-		if (dir == 1)
+		if (dir == right1 || dir == right2)
+		{
+			dir = 1;
 			go_right();
-		else if (dir == 2)
+		}
+		else if (dir == left1 || dir == left2)
+		{
+			dir = 2;
 			go_left();
-		else if (dir == 3)
+		}
+		else if (dir == up1 || dir == up2)
+		{
+			dir = 3;
 			go_up();
-		else if (dir == 4)
+		}
+		else if (dir == down1 || dir == down2)
+		{
+			dir = 4;
 			go_down();
+		}
 	}
 	cycle++;
 }

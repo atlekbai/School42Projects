@@ -38,6 +38,27 @@ enum	group
 	group_ui
 };
 
+enum	event
+{
+	empty,
+
+	right1,
+	left1,
+	up1,
+	down1,
+
+	right2,
+	left2,
+	up2,
+	down2,
+
+	space,
+	escape,
+
+	menu1,
+	menu2,
+	menu3,
+};
 class Framework
 {
 public:
@@ -51,6 +72,9 @@ public:
 	virtual int			handleEvents(void) = 0;
 	virtual unsigned	ticks(void) = 0;
 	virtual void		delay(int time) = 0;
+	virtual void		drawScore(int score, int id, int x, int y) = 0;
+
+
 	virtual ~Framework(void){}
 };
 

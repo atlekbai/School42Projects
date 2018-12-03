@@ -21,7 +21,8 @@
 class FoodSpawner: public Component
 {
 private:
-	std::deque<Vector2D> *body;
+	int						count;
+	std::deque<Vector2D> 	*body;
 
 public:
 	FoodSpawner(std::deque<Vector2D> *snake)
@@ -30,6 +31,7 @@ public:
 	}
 	void init(void) override;
 	void addFood(void);
+	void addFood(std::deque<Vector2D> body, int i);
 	void destroyFood(Entity *e);
 };
 

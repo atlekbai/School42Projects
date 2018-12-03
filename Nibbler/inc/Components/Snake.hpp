@@ -23,12 +23,16 @@ public:
 	int						dir;
 	unsigned 				cycle;
 	std::deque<Vector2D>	body;
-	Snake(int x, int y, int length)
+	int 					id;
+	int						score;
+	Snake(int x, int y, int length, int i)
 	{
+		id = i;
 		for (int i = 0; i < length; i++)
 			body.push_back({(x - i) * Game::cellSize, y * Game::cellSize});
 		dir = 1;
 		cycle = 0;
+		score = 0;
 	}
 	void	draw(void) override;
 
@@ -39,6 +43,7 @@ public:
 	void	go_down(void);
 	void	setDir(int newDir);
 	void	addTail(void);
+	void	cut(int i);
 };
 
 #endif
