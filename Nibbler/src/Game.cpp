@@ -82,7 +82,7 @@ void	Game::handleEvents(void)
 			start();
 			state = 1;
 		}
-		else if (control == 1 || control == 2 || control == 3 || control == 4)
+		else if (state == 1 && (control == 1 || control == 2 || control == 3 || control == 4))
 			player->getComponent<Snake>().setDir(control);
 	}
 	cycle++;
@@ -95,8 +95,21 @@ void	Game::update(void)
 		return ;
 	manager.update();
 
+    std::deque<Vector2D> body = player->getComponent<Snake>().body;
     Vector2D	snakeHead = player->getComponent<Snake>().body.front();
     Vector2D	pos;
+
+    for (auto i = body.begin(); i != body.end(); i++)
+    	for (auto j = body.begin(); j != body.end(); j++)
+    		if (i != j && i->x == j->x && i->y == j->y)
+			{
+				auto &cell(Game::manager.addEntity());
+				cell.addComponent<TransformComponent>(i->x, i->y, cellSize, cellSize);
+				cell.addComponent<SpriteComponent>("crash");
+				cell.addGroup(group_ui);
+				state = 2;
+				break ;
+			}
 
     for (auto &f: *foods)
     {

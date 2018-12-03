@@ -14,7 +14,6 @@
 
 void FoodSpawner::init(void)
 {
-	// count = 2;
 	addFood();
 }
 
@@ -28,18 +27,19 @@ void FoodSpawner::addFood(void)
 		{
 			contains = false;
 			for (int i = 0; i < body->size(); i++)
-				if ((*body)[i].x == x && (*body)[i].y == y)
+			{
+				if ((*body)[i].x / Game::cellSize == x && (*body)[i].y / Game::cellSize == y)
 				{
 					contains = true;
 					break;
 				}
+			}
 			if (!contains)
 				availSpace.push_back({x, y});
 		}
 	int randIdx = rand() % availSpace.size();
 	int x = availSpace[randIdx].x * Game::cellSize;
 	int y = availSpace[randIdx].y * Game::cellSize;
-	std::cout << x << " " << y << std::endl;
 	auto &food(Game::manager.addEntity());
 	food.addComponent<TransformComponent>(x, y, Game::cellSize, Game::cellSize);
 	food.addComponent<SpriteComponent>("food");

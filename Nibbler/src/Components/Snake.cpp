@@ -51,7 +51,9 @@ void	Snake::draw(void)
 	{
 		wayF = body[i - 1];
 		wayB = body[i + 1];
-		if (wayB.x == wayF.x)
+		if (wayF.x == wayB.x && wayF.y == wayB.y)
+			drawPart("snake_body", body[i].x, body[i].y, getAngle(dir));
+		else if (wayB.x == wayF.x)
 			drawPart("snake_body", body[i].x, body[i].y, 90);
 		else if (wayB.y == wayF.y)
 			drawPart("snake_body", body[i].x, body[i].y, 0);
@@ -102,15 +104,15 @@ void	Snake::addTail(void)
 
 	if (wayF.y == wayB.y)
 	{
-		x = (wayB.x > wayF.x) ? wayB.x + 1 : x = wayB.x - 1;
+		x = (wayB.x > wayF.x) ? wayB.x + Game::cellSize : wayB.x - Game::cellSize;
 		y = wayB.y;
 	}
 	else if (wayF.x == wayB.x)
 	{
 		x = wayB.x;
-		x = (wayB.y > wayF.y) ? wayB.y + 1 : x = wayB.y - 1;
+		y = (wayB.y > wayF.y) ? wayB.y + Game::cellSize : wayB.y - Game::cellSize;
 	}
-	body.push_back({x * Game::cellSize, y * Game::cellSize});
+	body.push_back({x, y});
 }
 
 

@@ -22,6 +22,7 @@ int	main(int ac, char **av)
 	int			width;
 	int			height;
 
+	srand(time(NULL));
 	width = 800;
 	height = 640;
 	game = new Game();
