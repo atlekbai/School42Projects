@@ -54,6 +54,8 @@ void	SDLFramework::init(const char *title, int width, int height)
 	textures.emplace("menu1", createLabel(Game::menu["menu1"], "bit32", "menu1"));
 	textures.emplace("menu2", createLabel(Game::menu["menu2"], "bit32", "menu2"));
 	textures.emplace("menu3", createLabel(Game::menu["menu3"], "bit32", "menu3"));
+	textures.emplace("menu4", createLabel(Game::menu["menu4"], "bit32", "menu4"));
+	textures.emplace("menu5", createLabel(Game::menu["menu5"], "bit32", "menu5"));
 	textures.emplace("footer", createLabel(Game::menu["footer"], "bit16", "footer"));
 
 	is_ready = true;
@@ -86,6 +88,7 @@ int		SDLFramework::handleEvents(void)
 		pos.y -= size[id].h / 2;
 		if (x >= pos.x && x <= pos.x + size[id].w &&
 			y >= pos.y && y <= pos.y + size[id].h)
+		{
 			if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
 			{
 				if (id == "menu1")
@@ -94,7 +97,12 @@ int		SDLFramework::handleEvents(void)
 					return (menu2);
 				else if (id == "menu3")
 					return (menu3);
+				else if (id == "menu4")
+					return (menu4);
+				else if (id == "menu5")
+					return (menu5);
 			}
+		}
 	}
 
 	if (event.type == SDL_QUIT)

@@ -58,6 +58,8 @@ enum	event
 	menu1,
 	menu2,
 	menu3,
+	menu4,
+	menu5
 };
 class Framework
 {

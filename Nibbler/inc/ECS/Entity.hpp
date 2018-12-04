@@ -23,7 +23,7 @@
 
 class Manager;
 
-constexpr std::size_t max_components = 32;
+constexpr std::size_t max_components = 512;
 constexpr std::size_t max_groups = 32;
 
 inline std::size_t get_new_component_type_id(void)
@@ -38,7 +38,6 @@ inline std::size_t get_component_id(void)
 	static std::size_t type_id = get_new_component_type_id();
 	return (type_id);
 }
-
 
 class Entity
 {

@@ -16,15 +16,23 @@
 # include "Framework.hpp"
 # include "Manager.hpp"
 # include <map>
+
 /*
 ** state 1 - game is runnig
 ** state 2 - game is over
+** state 3 - main menu
+** state 4 - local multiplayer
+** state 5 - multiplayer server
+** state 6 - multiplayer client
 */
+
 class Map;
 
 class Game
 {
 private:
+	int						cs;
+	char 					buf[1];
 	std::vector<Entity*>	*backgrounds;
 	std::vector<Entity*>	*players;
 	std::vector<Entity*>	*foods;
@@ -38,6 +46,8 @@ private:
 	void					checkSnake(Entity *snake);
 	void					checkSnakes(Entity **s1, Entity **s2);
 	void					addCrash(int x, int y);
+	void					netGame(void);
+	void					clientGame(void);
 	
 public:
 	Game(void);

@@ -97,7 +97,7 @@ void	Snake::draw(void)
 void	Snake::setDir(int newDir)
 {
 	dir = newDir;
-	cycle = 10;
+	cycle = 100;
 }
 
 void	Snake::addTail(void)
@@ -128,7 +128,7 @@ void	Snake::cut(int i)
 
 void	Snake::update(void)
 {
-	static unsigned wait = 10;
+	static unsigned wait = 100;
 	if (cycle == wait)
 	{
 		cycle = 0;

@@ -14,6 +14,17 @@
 #include "SDLFramework.hpp"
 #include "Components.hpp"
 #include "Map.hpp"
+#include <thread>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
 Manager		Game::manager;
 Framework	*Game::frameWork;
@@ -26,15 +37,54 @@ std::map<std::string, std::string> Game::menu = {
 	{"header", "Nibbler"},
 	{"menu1", "Play"},
 	{"menu2", "Multiplayer (local)"},
-	{"menu3", "Exit"},
+	{"menu3", "Multiplayer (net) server"},
+	{"menu4", "Multiplayer (net) client"},
+	{"menu5", "Exit"},
 	{"footer", "@atilegen\'s team"}
 };
+
+
+void	Game::netGame(void)
+{
+	state = 5;
+	struct sockaddr_in local;
+	int s = socket(AF_INET, SOCK_STREAM, 0);
+
+	inet_aton("127.0.0.1", &local.sin_addr);
+	local.sin_family = AF_INET;
+	local.sin_port = htons(4000);
+
+	int res = bind(s, (struct sockaddr*)&local, sizeof(local));
+	listen(s, 5);
+
+	std::cout << "waiting for connection..." << std::endl;
+	cs = accept(s, NULL, NULL);
+	std::cout << "connected!" << std::endl;
+	recv(cs, buf, 1, 0);
+	start(state);
+}
+
+void	Game::clientGame(void)
+{
+	state = 6;
+	struct sockaddr_in local;
+	cs = socket(AF_INET, SOCK_STREAM, 0);
+	inet_aton("127.0.0.1", &local.sin_addr);
+	local.sin_port = htons(4000);
+	local.sin_family = AF_INET;
+
+	connect(cs, (struct sockaddr*)&local, sizeof(local));
+	buf[0] = 1;
+	send(cs, buf, 1, 0);
+	start(state);
+}
 
 
 Game::Game(void){}
 
 Game::~Game(void)
 {
+	close(cs);
 	clear();
 	frameWork->close();
 }
@@ -59,6 +109,8 @@ void	Game::mainMenu(void)
 	auto &nibbler(Game::manager.addEntity());
 	auto &play(Game::manager.addEntity());
 	auto &scores(Game::manager.addEntity());
+	auto &net(Game::manager.addEntity());
+	auto &client(Game::manager.addEntity());
 	auto &exit(Game::manager.addEntity());
 	auto &author(Game::manager.addEntity());
 
@@ -74,8 +126,16 @@ void	Game::mainMenu(void)
 	scores.addComponent<SpriteComponent>("menu2");
 	scores.addGroup(group_ui);
 
-	exit.addComponent<TransformComponent>(mapSize.x * Game::cellSize / 2, (mapSize.y + 2) * Game::cellSize / 2, 0, 0);
-	exit.addComponent<SpriteComponent>("menu3");
+	net.addComponent<TransformComponent>(mapSize.x * Game::cellSize / 2, (mapSize.y + 2) * Game::cellSize / 2, 0, 0);
+	net.addComponent<SpriteComponent>("menu3");
+	net.addGroup(group_ui);
+
+	client.addComponent<TransformComponent>(mapSize.x * Game::cellSize / 2, (mapSize.y + 4) * Game::cellSize / 2, 0, 0);
+	client.addComponent<SpriteComponent>("menu4");
+	client.addGroup(group_ui);
+
+	exit.addComponent<TransformComponent>(mapSize.x * Game::cellSize / 2, (mapSize.y + 6) * Game::cellSize / 2, 0, 0);
+	exit.addComponent<SpriteComponent>("menu5");
 	exit.addGroup(group_ui);
 
 	author.addComponent<TransformComponent>(mapSize.x * Game::cellSize / 2, (mapSize.y - 2) * Game::cellSize, 0, 0);
@@ -87,6 +147,8 @@ void	Game::mainMenu(void)
 	foods = &manager.getGroup(group_food);
 	colliders = &manager.getGroup(group_colliders);
 	ui = &manager.getGroup(group_ui);
+	player = NULL;
+	player2 = NULL;
 }
 
 void	Game::start(int newState)
@@ -98,8 +160,8 @@ void	Game::start(int newState)
 	addSnake(&player, mapSize.x / 2, mapSize.y / 2, 2, 1);
 	
 	player2 = NULL;
-	if (state == 4)
-		addSnake(&player2, mapSize.x / 2, (mapSize.y + 2) / 2, 2, 2);
+	if (state == 4 || state == 5 || state == 6)
+		addSnake(&player2, mapSize.x / 2, (mapSize.y + 4) / 2, 2, 2);
 
 	foodSpawner = &manager.addEntity();
 	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body);
@@ -117,12 +179,18 @@ void	Game::clear(void)
 	manager.clear();
 }
 
+int		abs(int x)
+{
+	return (x < 0 ? -x : x);
+}
+
 void	Game::handleEvents(void)
 {
 	static unsigned wait = 5;
 	static unsigned cycle = 0;
+	std::thread t;
 	int control;
-
+	std::cout << state << std::endl;
 	if (cycle == wait)
 	{
 		cycle = 0;
@@ -132,13 +200,36 @@ void	Game::handleEvents(void)
 		else if (control == menu2)
 			start(4);
 		else if (control == menu3)
+			netGame();
+		else if (control == menu4)
+			clientGame();
+		else if (control == menu5)
 			is_running = false;
-		else if ((state == 1 || state == 4))
-		{
+
+		if (state == 1 || state == 4 || state == 5)
 			if (control == right1 || control == left1 || control == up1 || control == down1)
 				player->getComponent<Snake>().setDir(control);
-			else if ((control == right2 || control == left2 || control == up2 || control == down2) && player2)
+		if (state == 5)
+		{
+			buf[0] = control;
+			send(cs, buf, 1, 0);
+			recv(cs, buf, 1, 0);
+			if (buf[0] >= 1 && buf[0] <= 4)
+				player2->getComponent<Snake>().setDir(buf[0]);
+		}
+
+		if (state == 4 || state == 6)
+		{
+			if ((control == right2 || control == left2 || control == up2 || control == down2) && player2)
 				player2->getComponent<Snake>().setDir(control);
+		}
+		else if (state == 6)
+		{
+			buf[0] = control;
+			send(cs, buf, 1, 0);
+			recv(cs, buf, 1, 0);
+			if (buf[0] >= 1 && buf[0] <= 4)
+				player->getComponent<Snake>().setDir(buf[0]);
 		}
 		if (control == escape)
 				mainMenu();
@@ -175,11 +266,11 @@ void	Game::checkSnakes(Entity **s1, Entity **s2)
 void	Game::update(void)
 {
 	manager.refresh();
-	if (state != 1 && state != 4)
+	if (state != 1 && state != 4 && state != 5 && state != 6)
 		return ;
 	manager.update();
 	checkSnake(player);
-	if (state == 4)
+	if (state == 4 || state == 5)
 	{
 		checkSnake(player2);
 		checkSnakes(&player, &player2);
