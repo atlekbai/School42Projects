@@ -15,6 +15,8 @@
 
 # include "Framework.hpp"
 # include "Manager.hpp"
+# include "GUI.hpp"
+# include "Network.hpp"
 # include <map>
 
 /*
@@ -31,8 +33,7 @@ class Map;
 class Game
 {
 private:
-	int						cs;
-	char 					buf[1];
+	int						cs; // client socket
 	std::vector<Entity*>	*backgrounds;
 	std::vector<Entity*>	*players;
 	std::vector<Entity*>	*foods;
@@ -65,12 +66,13 @@ public:
 	
 	static bool			is_running;
 	static int			state;
+	static int			cellSize;
 	static Manager		manager;
+	static Vector2D		mapSize;
 	static Framework	*frameWork;
 	static Map			*map;
-	static int			cellSize;
-	static Vector2D		mapSize;
-	static std::map<std::string, std::string> menu;
+	static GUI			*gui;
+	static Network		*net;
 };
 
 #endif

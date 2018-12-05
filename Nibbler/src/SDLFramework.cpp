@@ -50,13 +50,13 @@ void	SDLFramework::init(const char *title, int width, int height)
 	textures.emplace("crash", loadTexture("assets/crash.png"));
 	textures.emplace("game_over", loadTexture("assets/game_over.png"));
 	
-	textures.emplace("header", createLabel(Game::menu["header"], "bit64", "header"));
-	textures.emplace("menu1", createLabel(Game::menu["menu1"], "bit32", "menu1"));
-	textures.emplace("menu2", createLabel(Game::menu["menu2"], "bit32", "menu2"));
-	textures.emplace("menu3", createLabel(Game::menu["menu3"], "bit32", "menu3"));
-	textures.emplace("menu4", createLabel(Game::menu["menu4"], "bit32", "menu4"));
-	textures.emplace("menu5", createLabel(Game::menu["menu5"], "bit32", "menu5"));
-	textures.emplace("footer", createLabel(Game::menu["footer"], "bit16", "footer"));
+	textures.emplace("header", createLabel(GUI::menu["header"], "bit64", "header"));
+	textures.emplace("menu1", createLabel(GUI::menu["menu1"], "bit32", "menu1"));
+	textures.emplace("menu2", createLabel(GUI::menu["menu2"], "bit32", "menu2"));
+	textures.emplace("menu3", createLabel(GUI::menu["menu3"], "bit32", "menu3"));
+	textures.emplace("menu4", createLabel(GUI::menu["menu4"], "bit32", "menu4"));
+	textures.emplace("menu5", createLabel(GUI::menu["menu5"], "bit32", "menu5"));
+	textures.emplace("footer", createLabel(GUI::menu["footer"], "bit16", "footer"));
 
 	is_ready = true;
 }
@@ -107,7 +107,7 @@ int		SDLFramework::handleEvents(void)
 
 	if (event.type == SDL_QUIT)
 		Game::is_running = false;
-	else if (event.type == SDL_KEYDOWN)
+	if (event.type == SDL_KEYDOWN)
 	{
 		SDL_Keycode code = event.key.keysym.sym;
 		if (code == SDLK_RIGHT)
@@ -128,7 +128,7 @@ int		SDLFramework::handleEvents(void)
 		else if (code == SDLK_s)		
 			return (down2);
 
-		else if (code == SDLK_SPACE)
+		if (code == SDLK_SPACE)
 			return (space);
 	}
 	else if (event.type == SDL_KEYUP)

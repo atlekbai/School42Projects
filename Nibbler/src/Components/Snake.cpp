@@ -11,6 +11,27 @@
 // ************************************************************************** //
 
 # include "Snake.hpp"
+# include "Game.hpp"
+
+Snake::Snake(int x, int y, int length, int i, int c1, int c2, int c3, int c4)
+{
+	id = i;
+	for (int i = 0; i < length; i++)
+		body.push_back({(x - i) * Game::cellSize, y * Game::cellSize});
+	
+	controller.emplace(c1, &Snake::go_right);
+	controller.emplace(c2, &Snake::go_left);
+	controller.emplace(c3, &Snake::go_up);
+	controller.emplace(c4, &Snake::go_down);
+	d1 = c1;
+	d2 = c2;
+	d3 = c3;
+	d4 = c4;
+
+	dir = c1;
+	cycle = 0;
+	score = 0;
+}
 
 static void	drawPart(std::string id, int x, int y, double angle, int i)
 {
@@ -24,13 +45,13 @@ static void	drawPart(std::string id, int x, int y, double angle, int i)
 	Game::frameWork->draw(id, src, dst, angle);
 }
 
-static int		getAngle(int dir)
+int		Snake::getAngle(int dir)
 {
-	if (dir == 2)
+	if (dir == d2)
 		return (180);
-	else if (dir == 3)
+	else if (dir == d3)
 		return (-90);
-	else if (dir == 4)
+	else if (dir == d4)
 		return (90);
 	return (0);
 }
@@ -96,8 +117,13 @@ void	Snake::draw(void)
 
 void	Snake::setDir(int newDir)
 {
-	dir = newDir;
-	cycle = 100;
+	if (newDir != 0)
+		std::cout << "newDir: " << newDir << std::endl;
+	if (newDir == d1 || newDir == d2 || newDir == d3 || newDir == d4)
+	{
+		dir = newDir;
+		cycle = 50;
+	}
 }
 
 void	Snake::addTail(void)
@@ -128,30 +154,11 @@ void	Snake::cut(int i)
 
 void	Snake::update(void)
 {
-	static unsigned wait = 100;
+	static unsigned wait = 50;
 	if (cycle == wait)
 	{
 		cycle = 0;
-		if (dir == right1 || dir == right2)
-		{
-			dir = 1;
-			go_right();
-		}
-		else if (dir == left1 || dir == left2)
-		{
-			dir = 2;
-			go_left();
-		}
-		else if (dir == up1 || dir == up2)
-		{
-			dir = 3;
-			go_up();
-		}
-		else if (dir == down1 || dir == down2)
-		{
-			dir = 4;
-			go_down();
-		}
+		(this->*controller[dir])();
 	}
 	cycle++;
 }

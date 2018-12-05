@@ -41,7 +41,7 @@ enum	group
 enum	event
 {
 	empty,
-
+	
 	right1,
 	left1,
 	up1,

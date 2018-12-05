@@ -30,6 +30,9 @@ SRC		=	main.cpp \
 			ECS/Manager.cpp \
 			Components/Snake.cpp\
 			Components/FoodSpawner.cpp\
+			Components/SpriteComponent.cpp\
+			GUI.cpp\
+			Network.cpp\
 			SDLFramework.cpp
 			
 OBJ		=	$(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))
@@ -50,7 +53,7 @@ FRAMEWORKS	=	-F./frameworks \
 all:		$(NAME)
 
 $(NAME):	$(OBJ)
-			@clang++ $(FLAGS) $(OBJ) -o $(NAME) $(INC) $(FRAMEWORKS) $(INCLUDES)
+			@g++ $(FLAGS) $(OBJ) -o $(NAME) $(INC) $(FRAMEWORKS) $(INCLUDES)
 			@echo " \033[1;92mDone!\033[0m"
 
 $(OBJ):		| $(OBJ_DIR)
@@ -60,7 +63,7 @@ $(OBJ_DIR):
 			@mkdir $(OBJ_DIR) $(OBJ_ECS) $(OBJ_MAN) $(OBJ_COM)
 
 $(OBJ_DIR)%.o:	$(SRC_DIR)%.cpp
-				@clang++ -c $< -o $@ $(FLAGS) $(INC) $(INCLUDES)
+				@g++ -c $< -o $@ $(FLAGS) $(INC) $(INCLUDES)
 				@echo "\033[42m  \033[0m\c"
 
 clean:

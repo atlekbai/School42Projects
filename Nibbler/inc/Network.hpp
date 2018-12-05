@@ -1,34 +1,37 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   FoodSpawner.hpp                                    :+:      :+:    :+:   //
+//   Network.hpp                                        :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: atlekbai <atlekbai@student.unit.ua>        +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/12/02 22:45:44 by atlekbai          #+#    #+#             //
-//   Updated: 2018/12/02 22:45:45 by atlekbai         ###   ########.fr       //
+//   Created: 2018/12/05 16:47:54 by atlekbai          #+#    #+#             //
+//   Updated: 2018/12/05 16:47:54 by atlekbai         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef FOOD_SPAWNER_HPP
-# define FOOD_SPAWNER_HPP
+#ifndef NETWORK_HPP
+# define NETWORK_HPP
 
-# include "Component.hpp"
-# include "Framework.hpp"
-# include <deque>
+#include <iostream>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
-class FoodSpawner: public Component
+class Network
 {
 private:
-	int						count;
-	std::deque<Vector2D> 	*body;
-
+	struct sockaddr_in	local;
+	char				buf[1];
 public:
-	FoodSpawner(std::deque<Vector2D> *snake);
-	void init(void) override;
-	void addFood(void);
-	void addFood(std::deque<Vector2D> body, int i);
-	void destroyFood(Entity *e);
+	Network(void){}
+	~Network(void){}
+	int		serverLoad(void);
+	int		clientConnect(void);
+	void	sendNet(int command, int s);
+	int		recvNet(int s);
 };
 
 #endif

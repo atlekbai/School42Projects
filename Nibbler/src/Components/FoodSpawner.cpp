@@ -11,6 +11,12 @@
 // ************************************************************************** //
 
 #include "FoodSpawner.hpp"
+#include "Game.hpp"
+
+FoodSpawner::FoodSpawner(std::deque<Vector2D> *snake)
+{
+	body = snake;
+}
 
 void FoodSpawner::init(void)
 {

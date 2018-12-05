@@ -14,6 +14,7 @@
 # define TRANSFORM_COMPONENT_HPP
 
 # include "Component.hpp"
+# include "Framework.hpp"
 
 class TransformComponent: public Component
 {

@@ -13,27 +13,29 @@
 #ifndef SNAKE_HPP
 # define SNAKE_HPP
 
-# include "Game.hpp"
 # include "Component.hpp"
+# include "Framework.hpp"
 # include <deque>
+# include <map>
 
 class Snake: public Component
 {
+private:
+	int d1;
+	int d2;
+	int d3;
+	int d4;
+	std::map<int, void(Snake::*)()> controller;
+	int		getAngle(int dir);
+	
 public:
 	int						dir;
 	unsigned 				cycle;
 	std::deque<Vector2D>	body;
 	int 					id;
 	int						score;
-	Snake(int x, int y, int length, int i)
-	{
-		id = i;
-		for (int i = 0; i < length; i++)
-			body.push_back({(x - i) * Game::cellSize, y * Game::cellSize});
-		dir = 1;
-		cycle = 0;
-		score = 0;
-	}
+
+	Snake(int x, int y, int length, int i, int c1, int c2, int c3, int c4);
 	void	draw(void) override;
 
 	void	update(void) override;

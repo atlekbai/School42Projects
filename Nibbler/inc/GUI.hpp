@@ -1,34 +1,33 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   FoodSpawner.hpp                                    :+:      :+:    :+:   //
+//   GUI.hpp                                            :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: atlekbai <atlekbai@student.unit.ua>        +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/12/02 22:45:44 by atlekbai          #+#    #+#             //
-//   Updated: 2018/12/02 22:45:45 by atlekbai         ###   ########.fr       //
+//   Created: 2018/12/05 13:26:43 by atlekbai          #+#    #+#             //
+//   Updated: 2018/12/05 13:26:43 by atlekbai         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef FOOD_SPAWNER_HPP
-# define FOOD_SPAWNER_HPP
+#ifndef GUI_HPP
+# define GUI_HPP
 
-# include "Component.hpp"
-# include "Framework.hpp"
-# include <deque>
+# include "Components.hpp"
+# include <map>
 
-class FoodSpawner: public Component
+class GUI
 {
 private:
-	int						count;
-	std::deque<Vector2D> 	*body;
+	void	addLabel(int x, int y, std::string id);
 
 public:
-	FoodSpawner(std::deque<Vector2D> *snake);
-	void init(void) override;
-	void addFood(void);
-	void addFood(std::deque<Vector2D> body, int i);
-	void destroyFood(Entity *e);
+	GUI(void){}
+	~GUI(void){}
+	void	loadMenu(void);
+	void	gameOver(void);
+	void	addScore(int score, int id);
+	static std::map<std::string, std::string> menu;
 };
 
 #endif
