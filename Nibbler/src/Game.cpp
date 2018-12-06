@@ -147,7 +147,7 @@ void	Game::start(int newState)
 	{
 		recv(cs, buf, 2, 0);
 		foodSpawner->getComponent<FoodSpawner>().addFood(buf[0] * Game::cellSize,
-													   buf[1] * Game::cellSize);
+													   	buf[1] * Game::cellSize);
 	}
 }
 

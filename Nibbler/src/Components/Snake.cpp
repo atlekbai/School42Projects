@@ -120,7 +120,7 @@ void	Snake::setDir(int newDir)
 	if (newDir == d1 || newDir == d2 || newDir == d3 || newDir == d4)
 	{
 		dir = newDir;
-		cycle = 50;
+		cycle = 10;
 	}
 }
 
@@ -152,7 +152,7 @@ void	Snake::cut(int i)
 
 void	Snake::update(void)
 {
-	static unsigned wait = 50;
+	static unsigned wait = 10;
 	if (cycle == wait)
 	{
 		cycle = 0;
