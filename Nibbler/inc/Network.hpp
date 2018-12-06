@@ -28,7 +28,7 @@ public:
 	Network(void){}
 	~Network(void){}
 	int	serverLoad(void);
-	int	clientConnect(void);
+	int	clientConnect(std::string ip);
 };
 
 #endif

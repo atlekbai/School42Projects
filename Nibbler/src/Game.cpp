@@ -64,8 +64,6 @@ int		Game::recvNet(void)
 
 void	Game::netGame(void)
 {
-	char sbuf[5];
-
 	state = 5;
 	cs = net.serverLoad();
 	start(state);
@@ -73,9 +71,12 @@ void	Game::netGame(void)
 
 void	Game::clientGame(void)
 {
-	char sbuf[5];
+	std::string ip;
+	std::cout << "enter ip address of server: ";
+	std::getline(std::cin, ip);
+
 	state = 6;
-	cs = net.clientConnect();
+	cs = net.clientConnect(ip);
 	if (state == 3)
 	{
 		mainMenu();
