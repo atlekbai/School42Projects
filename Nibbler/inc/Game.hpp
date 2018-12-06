@@ -33,7 +33,6 @@ class Map;
 class Game
 {
 private:
-	int						cs; // client socket
 	std::vector<Entity*>	*backgrounds;
 	std::vector<Entity*>	*players;
 	std::vector<Entity*>	*foods;
@@ -49,6 +48,8 @@ private:
 	void					addCrash(int x, int y);
 	void					netGame(void);
 	void					clientGame(void);
+	void					sendNet(int command);
+	int						recvNet(void);
 	
 public:
 	Game(void);
@@ -64,6 +65,8 @@ public:
 	void	clear(void);
 	void	mainMenu(void);
 	
+	char				buf[2];
+	static int			cs;
 	static bool			is_running;
 	static int			state;
 	static int			cellSize;
@@ -72,7 +75,7 @@ public:
 	static Framework	*frameWork;
 	static Map			*map;
 	static GUI			*gui;
-	static Network		*net;
+	static Network		net;
 };
 
 #endif

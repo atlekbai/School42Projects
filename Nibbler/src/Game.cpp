@@ -18,25 +18,69 @@
 Framework	*Game::frameWork = nullptr;
 Map			*Game::map = nullptr;
 GUI			*Game::gui = nullptr;
-Network		*Game::net = nullptr;
+Network		Game::net;
 bool		Game::is_running = false;
 int			Game::state = 1;
 int			Game::cellSize;
 Manager		Game::manager;
 Vector2D	Game::mapSize;
+int			Game::cs;
 
+
+void	Game::sendNet(int command)
+{
+	int res;
+
+	buf[0] = command;
+	res = send(cs, buf, 2, 0);
+	if (res == -1)
+	{
+		std::cout << "player disconnected" << std::endl;
+		state = 3;
+	}
+}
+
+int		Game::recvNet(void)
+{
+	int n;
+	int res;
+
+	struct timeval tv;
+	tv.tv_sec = 2;
+	tv.tv_usec = 0;
+	setsockopt(cs, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+
+
+	res = recv(cs, buf, 2, 0);
+	std::cout << res << std::endl;
+	if (res == -1)
+	{
+		std::cout << "player disconnected" << std::endl;
+		state = 3;
+	}
+	n = static_cast<int>(buf[0]);
+	return (n);
+}
 
 void	Game::netGame(void)
 {
+	char sbuf[5];
+
 	state = 5;
-	cs = net->serverLoad();
+	cs = net.serverLoad();
 	start(state);
 }
 
 void	Game::clientGame(void)
 {
+	char sbuf[5];
 	state = 6;
-	cs = net->clientConnect();
+	cs = net.clientConnect();
+	if (state == 3)
+	{
+		mainMenu();
+		return ;
+	}
 	start(state);
 }
 
@@ -46,6 +90,7 @@ Game::Game(void){}
 Game::~Game(void)
 {
 	clear();
+	close(cs);
 	delete (map);
 	frameWork->close();
 }
@@ -59,7 +104,6 @@ void	Game::init(const char *title, int width, int height)
 	mapSize = {width / cellSize, height / cellSize};
 	map = new Map();
 	gui = new GUI();
-	net = new Network();
 	player = NULL;
 	player2 = NULL;
 	backgrounds = &manager.getGroup(group_map);
@@ -80,7 +124,15 @@ void	Game::mainMenu(void)
 
 void	Game::start(int newState)
 {
+	bool mainSpawner = (state == 6) ? false : true;
 	clear();
+	
+
+	buf[0] = (state == 5) ? 77 : 88;
+	send(cs, buf, 2, 0);
+	recv(cs, buf, 2, 0);
+
+
 	state = newState;
 	map->loadMap(mapSize.x, mapSize.y);
 	addSnake(&player, mapSize.x / 2, mapSize.y / 2, 2, 1);
@@ -89,7 +141,13 @@ void	Game::start(int newState)
 		addSnake(&player2, mapSize.x / 2, (mapSize.y + 4) / 2, 2, 2);
 
 	foodSpawner = &manager.addEntity();
-	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body);
+	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body, mainSpawner);
+	if (state == 6)
+	{
+		recv(cs, buf, 2, 0);
+		foodSpawner->getComponent<FoodSpawner>().addFood(buf[0] * Game::cellSize,
+													   buf[1] * Game::cellSize);
+	}
 }
 
 void	Game::clear(void)
@@ -97,7 +155,6 @@ void	Game::clear(void)
 	manager.clear();
 	player = NULL;
 	player2 = NULL;
-	close(cs);
 }
 
 void	Game::handleEvents(void)
@@ -107,29 +164,39 @@ void	Game::handleEvents(void)
 	int 			control = 0;
 	int				netData = 0;
 
+	control = frameWork->handleEvents();
+
+	// std::cout << "-- handle --\n";
+
+	if (control == menu1)
+		start(1);
+	else if (control == menu2)
+		start(4);
+	else if (control == menu3)
+		netGame();
+	else if (control == menu4)
+		clientGame();
+	else if (control == menu5)
+		is_running = false;
+	else if (control == escape)
+		mainMenu();
+
 	if (cycle == wait)
 	{
 		cycle = 0;
-		control = frameWork->handleEvents();
 
-		if (control == menu1)
-			start(1);
-		else if (control == menu2)
-			start(4);
-		else if (control == menu3)
-			netGame();
-		else if (control == menu4)
-			clientGame();
-		else if (control == menu5)
-			is_running = false;
-
+		// std::cout << "socket: " << cs << std::endl;
 		if (state == 1 || state == 4 || state == 5)
 			player->getComponent<Snake>().setDir(control);
 		if (state == 5)
 		{
-			net->sendNet(control, cs);
-			netData = net->recvNet(cs);
+			// std::cout << "$> send5\n";
+			sendNet(control);
+			
+			// std::cout << "$> recvd5\n";
+			netData = recvNet();
 			// std::cout << "netData: " << netData << std::endl;
+			
 			player2->getComponent<Snake>().setDir(netData);
 		}
 
@@ -137,14 +204,17 @@ void	Game::handleEvents(void)
 			player2->getComponent<Snake>().setDir(control);
 		if (state == 6)
 		{
-			player->getComponent<Snake>().setDir(netData);
-			net->sendNet(control, cs);
-			netData = net->recvNet(cs);
+			// std::cout << "$> send6\n";
+			sendNet(control);
+			// std::cout << "$> recvd6\n";
+			netData = recvNet();
 			// std::cout << "netData: " << netData << std::endl;
+
+			player->getComponent<Snake>().setDir(netData);
+			
 		}
-		if (control == escape)
-			mainMenu();
 	}
+	// std::cout << "------------\n";
 	cycle++;
 }
 

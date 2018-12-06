@@ -22,11 +22,13 @@ class FoodSpawner: public Component
 private:
 	int						count;
 	std::deque<Vector2D> 	*body;
+	int						spawn;
 
 public:
-	FoodSpawner(std::deque<Vector2D> *snake);
+	FoodSpawner(std::deque<Vector2D> *snake, int main_spawner);
 	void init(void) override;
 	void addFood(void);
+	void addFood(int x, int y);
 	void addFood(std::deque<Vector2D> body, int i);
 	void destroyFood(Entity *e);
 };

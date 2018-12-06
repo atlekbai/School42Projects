@@ -112,20 +112,22 @@ int		SDLFramework::handleEvents(void)
 		SDL_Keycode code = event.key.keysym.sym;
 		if (code == SDLK_RIGHT)
 			return (right1);
-		else if (code == SDLK_LEFT)
-			return (left1);
-		else if (code == SDLK_UP)		
-			return (up1);
-		else if (code == SDLK_DOWN)		
-			return (down1);
-
 		if (code == SDLK_d)
 			return (right2);
-		else if (code == SDLK_a)
+
+		if (code == SDLK_LEFT)
+			return (left1);
+		if (code == SDLK_a)
 			return (left2);
-		else if (code == SDLK_w)		
+
+		if (code == SDLK_UP)		
+			return (up1);
+		if (code == SDLK_w)		
 			return (up2);
-		else if (code == SDLK_s)		
+
+		if (code == SDLK_DOWN)		
+			return (down1);
+		if (code == SDLK_s)		
 			return (down2);
 
 		if (code == SDLK_SPACE)

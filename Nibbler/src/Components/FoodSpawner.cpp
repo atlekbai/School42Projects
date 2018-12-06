@@ -13,15 +13,26 @@
 #include "FoodSpawner.hpp"
 #include "Game.hpp"
 
-FoodSpawner::FoodSpawner(std::deque<Vector2D> *snake)
+FoodSpawner::FoodSpawner(std::deque<Vector2D> *snake, int main_spawner)
 {
 	body = snake;
+	spawn = main_spawner;
 }
 
 void FoodSpawner::init(void)
 {
 	count = 0;
-	addFood();
+	if (spawn)
+		addFood();
+}
+
+void FoodSpawner::addFood(int x, int y)
+{
+	auto &food(Game::manager.addEntity());
+	food.addComponent<TransformComponent>(x, y, Game::cellSize, Game::cellSize);
+	food.addComponent<SpriteComponent>("food");
+	food.addGroup(group_food);
+	count++;
 }
 
 void FoodSpawner::addFood(void)
@@ -51,6 +62,15 @@ void FoodSpawner::addFood(void)
 		food.addComponent<TransformComponent>(x, y, Game::cellSize, Game::cellSize);
 		food.addComponent<SpriteComponent>("food");
 		food.addGroup(group_food);
+
+		if (Game::state == 5)
+		{
+			char buf[2];
+			buf[0] = x / Game::cellSize;
+			buf[1] = y / Game::cellSize;
+			send(Game::cs, buf, 2, 0);
+		}
+
 		count++;
 	}
 }
@@ -71,5 +91,12 @@ void FoodSpawner::destroyFood(Entity *e)
 {
 	e->destroy();
 	count--;
-	addFood();
+	if (spawn)
+		addFood();
+	if (Game::state == 6)
+	{
+		char buf[2];
+		recv(Game::cs, buf, 2, 0);
+		addFood(buf[0] * Game::cellSize, buf[1] * Game::cellSize);
+	}
 }

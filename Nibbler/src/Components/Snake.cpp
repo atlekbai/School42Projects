@@ -117,8 +117,6 @@ void	Snake::draw(void)
 
 void	Snake::setDir(int newDir)
 {
-	if (newDir != 0)
-		std::cout << "newDir: " << newDir << std::endl;
 	if (newDir == d1 || newDir == d2 || newDir == d3 || newDir == d4)
 	{
 		dir = newDir;

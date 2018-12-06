@@ -24,14 +24,11 @@ class Network
 {
 private:
 	struct sockaddr_in	local;
-	char				buf[1];
 public:
 	Network(void){}
 	~Network(void){}
-	int		serverLoad(void);
-	int		clientConnect(void);
-	void	sendNet(int command, int s);
-	int		recvNet(int s);
+	int	serverLoad(void);
+	int	clientConnect(void);
 };
 
 #endif

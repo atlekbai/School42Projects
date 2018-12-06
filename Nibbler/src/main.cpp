@@ -31,10 +31,12 @@ int	main(int ac, char **av)
 	while (game->running())
 	{
 		frame_start = game->ticks();
+
 		game->handleEvents();
 		game->update();
 		game->render();
 		frame_time = game->ticks() - frame_start;
+		
 		if (frame_delay > frame_time)
 			game->delay(frame_delay - frame_time);
 	}
