@@ -119,6 +119,11 @@ void	Snake::setDir(int newDir)
 {
 	if (newDir == d1 || newDir == d2 || newDir == d3 || newDir == d4)
 	{
+		if ((dir == d1 && newDir == d2) ||
+			(dir == d2 && newDir == d1) ||
+			(dir == d3 && newDir == d4) ||
+			(dir == d4 && newDir == d3))
+			return ;
 		dir = newDir;
 		cycle = 10;
 	}

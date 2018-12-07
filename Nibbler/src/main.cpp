@@ -33,7 +33,10 @@ Framework *getFramework(const char *path)
 int	main(int ac, char **av)
 {
 	if (ac != 3)
+	{
+		std::cout << "Usage: " << av[0] << " <width> <height>" << std::endl;
 		return (0);
+	}
 	const int	FPS = 60;
 	const int	frame_delay = 1000 / FPS;
 	unsigned	frame_start;

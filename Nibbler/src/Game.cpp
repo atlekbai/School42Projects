@@ -133,9 +133,9 @@ void	Game::start(int newState)
 	clear();
 	state = newState;
 	map->loadMap(mapSize.x, mapSize.y);
-	addSnake(&player, mapSize.x / 2, mapSize.y / 2, 2, 1);
+	addSnake(&player, mapSize.x / 2, mapSize.y / 2, 4, 1);
 	if (state == 4 || state == 5 || state == 6)
-		addSnake(&player2, mapSize.x / 2, (mapSize.y + 4) / 2, 2, 2);
+		addSnake(&player2, mapSize.x / 2, (mapSize.y + 4) / 2, 4, 2);
 	foodSpawner = &manager.addEntity();
 	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body, mainSpawner);
 	if (state == 6)
