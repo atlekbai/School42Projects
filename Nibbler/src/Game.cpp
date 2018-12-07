@@ -26,6 +26,10 @@ Manager		Game::manager;
 Vector2D	Game::mapSize;
 int			Game::cs;
 
+void	Game::addFramework(Framework* f)
+{
+	frameWorks.push_back(f);
+}
 
 void	Game::sendNet(int command)
 {
@@ -98,8 +102,8 @@ Game::~Game(void)
 
 void	Game::init(const char *title, int width, int height)
 {
-	frameWork = new SDLFramework();
-	frameWork->init(title, width, height);
+	frameWork = frameWorks[0];
+	frameWork->init(title, width, height, GUI::menu);
 	is_running = true;
 	cellSize = 32;
 	mapSize = {width / cellSize, height / cellSize};
@@ -127,20 +131,11 @@ void	Game::start(int newState)
 {
 	bool mainSpawner = (state == 6) ? false : true;
 	clear();
-	
-
-	buf[0] = (state == 5) ? 77 : 88;
-	send(cs, buf, 2, 0);
-	recv(cs, buf, 2, 0);
-
-
 	state = newState;
 	map->loadMap(mapSize.x, mapSize.y);
 	addSnake(&player, mapSize.x / 2, mapSize.y / 2, 2, 1);
-	
 	if (state == 4 || state == 5 || state == 6)
 		addSnake(&player2, mapSize.x / 2, (mapSize.y + 4) / 2, 2, 2);
-
 	foodSpawner = &manager.addEntity();
 	foodSpawner->addComponent<FoodSpawner>(&player->getComponent<Snake>().body, mainSpawner);
 	if (state == 6)
@@ -158,6 +153,15 @@ void	Game::clear(void)
 	player2 = NULL;
 }
 
+void	Game::setFrame(int frameIndex)
+{
+	if (frameWork == frameWorks[frameIndex - frame1])
+		return ;
+	frameWork->close();
+	frameWork = frameWorks[frameIndex - frame1];
+	frameWork->init("Nibbler", mapSize.x * cellSize, mapSize.y * cellSize, GUI::menu);
+}
+
 void	Game::handleEvents(void)
 {
 	static unsigned	wait = 5;
@@ -165,9 +169,7 @@ void	Game::handleEvents(void)
 	int 			control = 0;
 	int				netData = 0;
 
-	control = frameWork->handleEvents();
-
-	// std::cout << "-- handle --\n";
+	control = frameWork->handleEvents(Game::manager.getGroup(group_ui));
 
 	if (control == menu1)
 		start(1);
@@ -177,45 +179,32 @@ void	Game::handleEvents(void)
 		netGame();
 	else if (control == menu4)
 		clientGame();
-	else if (control == menu5)
+	else if (control == menu5 || control == exit_event)
 		is_running = false;
 	else if (control == escape)
 		mainMenu();
-
+	if (control == frame1 || control == frame2 || control == frame3)
+		setFrame(control);
 	if (cycle == wait)
 	{
 		cycle = 0;
-
-		// std::cout << "socket: " << cs << std::endl;
 		if (state == 1 || state == 4 || state == 5)
 			player->getComponent<Snake>().setDir(control);
 		if (state == 5)
 		{
-			// std::cout << "$> send5\n";
 			sendNet(control);
-			
-			// std::cout << "$> recvd5\n";
-			netData = recvNet();
-			// std::cout << "netData: " << netData << std::endl;
-			
+			netData = recvNet();		
 			player2->getComponent<Snake>().setDir(netData);
 		}
-
-		if ((state == 4 || state == 6) && player2)
-			player2->getComponent<Snake>().setDir(control);
 		if (state == 6)
 		{
-			// std::cout << "$> send6\n";
 			sendNet(control);
-			// std::cout << "$> recvd6\n";
 			netData = recvNet();
-			// std::cout << "netData: " << netData << std::endl;
-
 			player->getComponent<Snake>().setDir(netData);
-			
 		}
 	}
-	// std::cout << "------------\n";
+	if ((state == 4 || state == 6) && player2)
+		player2->getComponent<Snake>().setDir(control);
 	cycle++;
 }
 

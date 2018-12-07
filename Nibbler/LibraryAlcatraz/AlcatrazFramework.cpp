@@ -1,7 +1,7 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   SDLFramework.cpp                                   :+:      :+:    :+:   //
+//   AlcatrazFramework.cpp                              :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: atlekbai <atlekbai@student.unit.ua>        +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
@@ -10,14 +10,51 @@
 //                                                                            //
 // ************************************************************************** //
 
-#include "SDLFramework.hpp"
+#include "AlcatrazFramework.hpp"
 #include "Components.hpp"
 #include "Game.hpp"
 
-SDL_Renderer	*SDLFramework::renderer = nullptr;
-SDL_Event		SDLFramework::event;
+extern "C" Framework* createFramework(void)
+{
+	return (new AlcatrazFramework);
+}
 
-void	SDLFramework::init(const char *title, int width, int height)
+SDL_Renderer	*AlcatrazFramework::renderer = nullptr;
+SDL_Event		AlcatrazFramework::event;
+
+void	AlcatrazFramework::loadAssets(std::map<std::string, std::string> menu)
+{
+	fonts.emplace("bit16", TTF_OpenFont("assets/alcatraz/8bit.ttf", 16));
+	fonts.emplace("bit32", TTF_OpenFont("assets/alcatraz/8bit.ttf", 32));
+	fonts.emplace("bit64", TTF_OpenFont("assets/alcatraz/8bit.ttf", 64));
+
+	textures.emplace("snake_head", loadTexture("assets/alcatraz/snake_head.png"));
+	textures.emplace("snake_edge", loadTexture("assets/alcatraz/snake_edge.png"));
+	textures.emplace("snake_tail", loadTexture("assets/alcatraz/snake_tail.png"));
+	textures.emplace("snake_body", loadTexture("assets/alcatraz/snake_direct.png"));
+
+	textures.emplace("snake_head2", loadTexture("assets/alcatraz/snake2_head.png"));
+	textures.emplace("snake_edge2", loadTexture("assets/alcatraz/snake2_edge.png"));
+	textures.emplace("snake_tail2", loadTexture("assets/alcatraz/snake2_tail.png"));
+	textures.emplace("snake_body2", loadTexture("assets/alcatraz/snake2_direct.png"));
+
+
+	textures.emplace("background", loadTexture("assets/alcatraz/dirt.png"));
+	textures.emplace("collider", loadTexture("assets/alcatraz/stone.png"));
+	textures.emplace("food", loadTexture("assets/alcatraz/food.png"));
+	textures.emplace("crash", loadTexture("assets/alcatraz/crash.png"));
+	textures.emplace("game_over", loadTexture("assets/alcatraz/game_over.png"));
+	
+	textures.emplace("header", createLabel(menu["header"], "bit64", "header"));
+	textures.emplace("menu1", createLabel(menu["menu1"], "bit32", "menu1"));
+	textures.emplace("menu2", createLabel(menu["menu2"], "bit32", "menu2"));
+	textures.emplace("menu3", createLabel(menu["menu3"], "bit32", "menu3"));
+	textures.emplace("menu4", createLabel(menu["menu4"], "bit32", "menu4"));
+	textures.emplace("menu5", createLabel(menu["menu5"], "bit32", "menu5"));
+	textures.emplace("footer", createLabel(menu["footer"], "bit16", "footer"));
+}
+
+void	AlcatrazFramework::init(const char *title, int width, int height, std::map<std::string, std::string> menu)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) return ;
 	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
@@ -25,43 +62,22 @@ void	SDLFramework::init(const char *title, int width, int height)
 									 width, height, 0);
 	if (!window) return ;
 	renderer = SDL_CreateRenderer(window, -1, 0);
-	if (!renderer) return ;
+	if (!renderer)
+	{
+		std::cout << "renderer error alcatraz\n";
+		return ;
+	}
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	if (TTF_Init() == -1) return ;
-
-	fonts.emplace("bit16", TTF_OpenFont("assets/8bit.ttf", 16));
-	fonts.emplace("bit32", TTF_OpenFont("assets/8bit.ttf", 32));
-	fonts.emplace("bit64", TTF_OpenFont("assets/8bit.ttf", 64));
-
-	textures.emplace("snake_head", loadTexture("assets/snake_head.png"));
-	textures.emplace("snake_edge", loadTexture("assets/snake_edge.png"));
-	textures.emplace("snake_tail", loadTexture("assets/snake_tail.png"));
-	textures.emplace("snake_body", loadTexture("assets/snake_direct.png"));
-
-	textures.emplace("snake_head2", loadTexture("assets/snake2_head.png"));
-	textures.emplace("snake_edge2", loadTexture("assets/snake2_edge.png"));
-	textures.emplace("snake_tail2", loadTexture("assets/snake2_tail.png"));
-	textures.emplace("snake_body2", loadTexture("assets/snake2_direct.png"));
-
-
-	textures.emplace("background", loadTexture("assets/dirt.png"));
-	textures.emplace("collider", loadTexture("assets/stone.png"));
-	textures.emplace("food", loadTexture("assets/food.png"));
-	textures.emplace("crash", loadTexture("assets/crash.png"));
-	textures.emplace("game_over", loadTexture("assets/game_over.png"));
-	
-	textures.emplace("header", createLabel(GUI::menu["header"], "bit64", "header"));
-	textures.emplace("menu1", createLabel(GUI::menu["menu1"], "bit32", "menu1"));
-	textures.emplace("menu2", createLabel(GUI::menu["menu2"], "bit32", "menu2"));
-	textures.emplace("menu3", createLabel(GUI::menu["menu3"], "bit32", "menu3"));
-	textures.emplace("menu4", createLabel(GUI::menu["menu4"], "bit32", "menu4"));
-	textures.emplace("menu5", createLabel(GUI::menu["menu5"], "bit32", "menu5"));
-	textures.emplace("footer", createLabel(GUI::menu["footer"], "bit16", "footer"));
-
+	if (TTF_Init() == -1)
+	{
+		std::cout << "ttf error alcatraz" << std::endl;
+		return ;
+	}
 	is_ready = true;
+	loadAssets(menu);
 }
 
-SDL_Texture *SDLFramework::createLabel(std::string text, std::string fontId, std::string id)
+SDL_Texture *AlcatrazFramework::createLabel(std::string text, std::string fontId, std::string id)
 {
 	Rect src = {0, 0, 0, 0};
 	SDL_Color black = {0, 0, 0, 255};
@@ -73,13 +89,12 @@ SDL_Texture *SDLFramework::createLabel(std::string text, std::string fontId, std
 	return (textTexture);
 }
 
-int		SDLFramework::handleEvents(void)
+int		AlcatrazFramework::handleEvents(std::vector<Entity*> ui)
 {
 	SDL_PollEvent(&event);
 
 	int x, y;
 	SDL_GetMouseState(&x, &y);
-	auto &ui(Game::manager.getGroup(group_ui));
 	for (auto &u: ui)
 	{
 		std::string id = u->getComponent<SpriteComponent>().textureId;
@@ -106,7 +121,7 @@ int		SDLFramework::handleEvents(void)
 	}
 
 	if (event.type == SDL_QUIT)
-		Game::is_running = false;
+		return (exit_event);
 	if (event.type == SDL_KEYDOWN)
 	{
 		SDL_Keycode code = event.key.keysym.sym;
@@ -132,6 +147,12 @@ int		SDLFramework::handleEvents(void)
 
 		if (code == SDLK_SPACE)
 			return (space);
+		if (code == SDLK_1)
+			return (frame1);
+		if (code == SDLK_2)
+			return (frame2);
+		if (code == SDLK_3)
+			return (frame3);
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -142,12 +163,12 @@ int		SDLFramework::handleEvents(void)
 	return (empty);
 }
 
-void	SDLFramework::clear(void)
+void	AlcatrazFramework::clear(void)
 {
 	SDL_RenderClear(renderer);
 }
 
-void	SDLFramework::drawScore(int score, int id, int x, int y)
+void	AlcatrazFramework::drawScore(int score, int id, int x, int y)
 {
 	std::string scoreStr = "player" + std::to_string(id) + ": " + std::to_string(score);
 	SDL_Texture *label = createLabel(scoreStr, "bit32", "score1");
@@ -160,7 +181,7 @@ void	SDLFramework::drawScore(int score, int id, int x, int y)
 }
 
 
-void	SDLFramework::draw(std::string id, Rect src, Rect dst, double angle)
+void	AlcatrazFramework::draw(std::string id, Rect src, Rect dst, double angle)
 {
 	SDL_Rect s = {src.x, src.y, src.w, src.h};
 	SDL_Rect d = {dst.x, dst.y, dst.w, dst.h};
@@ -176,22 +197,21 @@ void	SDLFramework::draw(std::string id, Rect src, Rect dst, double angle)
 	SDL_RenderCopyEx(renderer, textures[id], &s, &d, angle, NULL, SDL_FLIP_NONE);
 }
 
-void	SDLFramework::render(void)
+void	AlcatrazFramework::render(void)
 {
 	SDL_RenderPresent(renderer);
 }
 
-void	SDLFramework::close(void)
+void	AlcatrazFramework::close(void)
 {
-	for (auto &t: textures)
-		SDL_DestroyTexture(t.second);
-
+	textures.clear();
+	fonts.clear();
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
 }
 
-SDL_Texture	*SDLFramework::loadTexture(const char *fileName)
+SDL_Texture	*AlcatrazFramework::loadTexture(const char *fileName)
 {
 	SDL_Surface *tmp = IMG_Load(fileName);
 	SDL_Texture	*texture = SDL_CreateTextureFromSurface(renderer, tmp);
@@ -199,12 +219,12 @@ SDL_Texture	*SDLFramework::loadTexture(const char *fileName)
 	return (texture);
 }
 
-void	SDLFramework::delay(int time)
+void	AlcatrazFramework::delay(int time)
 {
 	SDL_Delay(time);
 }
 
-unsigned SDLFramework::ticks(void)
+unsigned AlcatrazFramework::ticks(void)
 {
 	return (SDL_GetTicks());
 }

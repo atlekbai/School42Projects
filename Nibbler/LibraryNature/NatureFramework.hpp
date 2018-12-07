@@ -1,7 +1,7 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   SDLFramework.hpp                                   :+:      :+:    :+:   //
+//   NatureFramework.hpp                                :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: atlekbai <atlekbai@student.unit.ua>        +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
@@ -10,8 +10,8 @@
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef SDLFRAMEWORK_HPP
-# define SDLFRAMEWORK_HPP
+#ifndef NatureFramework_HPP
+# define NatureFramework_HPP
 
 # include "Framework.hpp"
 # include "SDL2/SDL.h"
@@ -20,7 +20,7 @@
 # include <iostream>
 # include <map>
 
-class SDLFramework: public Framework
+class NatureFramework: public Framework
 {
 private:
 	std::map<std::string, SDL_Texture*>		textures;
@@ -30,16 +30,17 @@ private:
 	SDL_Texture 		*createLabel(std::string text, std::string fontId, std::string id);
 
 public:
-	virtual void		init(const char *title, int width, int height);
+	virtual void		init(const char *title, int width, int height, std::map<std::string, std::string> menu);
 	virtual void		clear(void);
 	virtual void		draw(std::string textureId, Rect src, Rect dst, double angle);
 	virtual void		render(void);
 	virtual void		close(void);
-	virtual int			handleEvents(void);
+	virtual int			handleEvents(std::vector<Entity*> ui);
 	virtual SDL_Texture	*loadTexture(const char *fileName);
 	virtual void		delay(int time);
 	virtual unsigned	ticks(void);
 	virtual void		drawScore(int score, int id, int x, int y);
+	virtual void		loadAssets(std::map<std::string, std::string> menu);
 
 
 	static SDL_Renderer	*renderer;

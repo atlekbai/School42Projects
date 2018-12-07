@@ -14,6 +14,9 @@
 # define FRAMEWORK_HPP
 
 # include <iostream>
+# include <map>
+
+class Entity;
 
 struct	Rect
 {
@@ -59,22 +62,28 @@ enum	event
 	menu2,
 	menu3,
 	menu4,
-	menu5
+	menu5,
+
+	frame1,
+	frame2,
+	frame3,
+	exit_event
 };
 class Framework
 {
 public:
 	bool				is_ready = false;
 
-	virtual void		init(const char *title, int width, int height) = 0;
+	virtual void		init(const char *title, int width, int height, std::map<std::string, std::string> menu) = 0;
 	virtual void		close(void) = 0;
 	virtual void		draw(std::string textureId, Rect src, Rect dst, double angle) = 0;
 	virtual void		clear(void) = 0;
 	virtual void		render(void) = 0;
-	virtual int			handleEvents(void) = 0;
+	virtual int			handleEvents(std::vector<Entity*> ui) = 0;
 	virtual unsigned	ticks(void) = 0;
 	virtual void		delay(int time) = 0;
 	virtual void		drawScore(int score, int id, int x, int y) = 0;
+	virtual void		loadAssets(std::map<std::string, std::string> menu) = 0;
 
 
 	virtual ~Framework(void){}

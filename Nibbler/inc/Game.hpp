@@ -18,6 +18,7 @@
 # include "GUI.hpp"
 # include "Network.hpp"
 # include <map>
+# include <vector>
 
 /*
 ** state 1 - game is runnig
@@ -41,6 +42,7 @@ private:
 	Entity					*player;
 	Entity					*player2;
 	Entity					*foodSpawner;
+	std::vector<Framework*>	frameWorks;
 
 	void					addSnake(Entity **p, int x, int y, int len, int id);
 	void					checkSnake(Entity *snake);
@@ -50,6 +52,7 @@ private:
 	void					clientGame(void);
 	void					sendNet(int command);
 	int						recvNet(void);
+	void					setFrame(int frameIndex);
 	
 public:
 	Game(void);
@@ -64,6 +67,7 @@ public:
 	void	start(int newState);
 	void	clear(void);
 	void	mainMenu(void);
+	void	addFramework(Framework*);
 	
 	char				buf[2];
 	static int			cs;

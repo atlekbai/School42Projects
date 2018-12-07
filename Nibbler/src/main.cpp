@@ -11,7 +11,19 @@
 // ************************************************************************** //
 
 #include "Game.hpp"
-#include <thread>
+#include <dlfcn.h>
+
+#define LIB1 "./LibraryDesert/libDesert.so"
+#define LIB2 "./LibraryNature/libNature.so"
+#define LIB3 "./LibraryAlcatraz/libAlcatraz.so"
+
+Framework *getFramework(const char *path)
+{
+	void *handle = dlopen(path, RTLD_LAZY);
+	Framework* (*createFramework)(void);
+	createFramework = (Framework* (*)(void))dlsym(handle, "createFramework");
+	return ((Framework*)createFramework());
+}
 
 int	main(int ac, char **av)
 {
@@ -39,8 +51,15 @@ int	main(int ac, char **av)
 		std::cout << "Error: large width or height" << std::endl;
 		return (0);
 	}
-
 	game = new Game();
+
+	Framework *desert = getFramework(LIB1);
+	Framework *nature = getFramework(LIB2);
+	Framework *alcatraz = getFramework(LIB3);
+	game->addFramework(desert);
+	game->addFramework(nature);
+	game->addFramework(alcatraz);
+	
 	game->init("Nibbler", width, height);
 	while (game->running())
 	{
