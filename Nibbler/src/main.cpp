@@ -20,6 +20,11 @@
 Framework *getFramework(const char *path)
 {
 	void *handle = dlopen(path, RTLD_LAZY);
+	if (!handle)
+	{
+		std::cout << "Error: \"" << path << "\" not found." << std::endl;
+		exit(0); 
+	}
 	Framework* (*createFramework)(void);
 	createFramework = (Framework* (*)(void))dlsym(handle, "createFramework");
 	return ((Framework*)createFramework());
