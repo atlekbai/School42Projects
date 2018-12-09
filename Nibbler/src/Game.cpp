@@ -37,6 +37,7 @@ void	Game::sendNet(int command)
 
 	buf[0] = command;
 	res = send(cs, buf, 2, 0);
+
 	if (res == -1)
 	{
 		std::cout << "player disconnected" << std::endl;
@@ -56,7 +57,6 @@ int		Game::recvNet(void)
 
 
 	res = recv(cs, buf, 2, 0);
-	std::cout << res << std::endl;
 	if (res == -1)
 	{
 		std::cout << "player disconnected" << std::endl;
@@ -185,26 +185,31 @@ void	Game::handleEvents(void)
 		mainMenu();
 	if (control == frame1 || control == frame2 || control == frame3)
 		setFrame(control);
+	if ((state == 4 || state == 6) && player2)
+	{
+		player2->getComponent<Snake>().setDir(control);
+		sendNet(control);
+	}
+	if (state == 5)
+	{
+		netData = recvNet();		
+		player2->getComponent<Snake>().setDir(netData);
+	}
 	if (cycle == wait)
 	{
 		cycle = 0;
 		if (state == 1 || state == 4 || state == 5)
-			player->getComponent<Snake>().setDir(control);
-		if (state == 5)
 		{
+			player->getComponent<Snake>().setDir(control);
 			sendNet(control);
-			netData = recvNet();		
-			player2->getComponent<Snake>().setDir(netData);
 		}
 		if (state == 6)
 		{
-			sendNet(control);
 			netData = recvNet();
-			player->getComponent<Snake>().setDir(netData);
+			player->getComponent<Snake>().setDir(netData);	
 		}
 	}
-	if ((state == 4 || state == 6) && player2)
-		player2->getComponent<Snake>().setDir(control);
+	
 	cycle++;
 }
 

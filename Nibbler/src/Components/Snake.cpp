@@ -12,6 +12,7 @@
 
 # include "Snake.hpp"
 # include "Game.hpp"
+# define WAIT 10
 
 Snake::Snake(int x, int y, int length, int i, int c1, int c2, int c3, int c4)
 {
@@ -115,7 +116,7 @@ void	Snake::draw(void)
 	}
 }
 
-void	Snake::setDir(int newDir)
+bool	Snake::setDir(int newDir)
 {
 	if (newDir == d1 || newDir == d2 || newDir == d3 || newDir == d4)
 	{
@@ -123,10 +124,12 @@ void	Snake::setDir(int newDir)
 			(dir == d2 && newDir == d1) ||
 			(dir == d3 && newDir == d4) ||
 			(dir == d4 && newDir == d3))
-			return ;
+			return (false);
 		dir = newDir;
-		cycle = 10;
+		cycle = WAIT;
+		return (true);
 	}
+	return (false);
 }
 
 void	Snake::addTail(void)
@@ -151,13 +154,13 @@ void	Snake::addTail(void)
 
 void	Snake::cut(int i)
 {
+	score -= body.size() - i;
 	body.erase(body.begin() + i, body.end());
 }
 
-
 void	Snake::update(void)
 {
-	static unsigned wait = 10;
+	static unsigned wait = WAIT;
 	if (cycle == wait)
 	{
 		cycle = 0;

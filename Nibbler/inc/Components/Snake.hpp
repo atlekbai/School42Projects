@@ -43,7 +43,7 @@ public:
 	void	go_up(void);
 	void	go_left(void);
 	void	go_down(void);
-	void	setDir(int newDir);
+	bool	setDir(int newDir);
 	void	addTail(void);
 	void	cut(int i);
 };
