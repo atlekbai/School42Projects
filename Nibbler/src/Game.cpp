@@ -40,7 +40,7 @@ void	Game::sendNet(int command)
 
 	if (res == -1)
 	{
-		std::cout << "player disconnected" << std::endl;
+		std::cout << "send: player disconnected" << std::endl;
 		state = 3;
 	}
 }
@@ -59,7 +59,7 @@ int		Game::recvNet(void)
 	res = recv(cs, buf, 2, 0);
 	if (res == -1)
 	{
-		std::cout << "player disconnected" << std::endl;
+		std::cout << "recv: player disconnected" << std::endl;
 		state = 3;
 	}
 	n = static_cast<int>(buf[0]);
@@ -188,7 +188,7 @@ void	Game::handleEvents(void)
 	if ((state == 4 || state == 6) && player2)
 	{
 		player2->getComponent<Snake>().setDir(control);
-		sendNet(control);
+		if (state == 6) sendNet(control);
 	}
 	if (state == 5)
 	{
@@ -201,7 +201,7 @@ void	Game::handleEvents(void)
 		if (state == 1 || state == 4 || state == 5)
 		{
 			player->getComponent<Snake>().setDir(control);
-			sendNet(control);
+			if (state == 5) sendNet(control);
 		}
 		if (state == 6)
 		{
